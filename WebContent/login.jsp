@@ -27,6 +27,10 @@
       </tr>
      </table>
      </form>
+     		<% if (request.getAttribute("userID") == ""){
+			%>
+			<jsp:text>Invalid Username/Password. Please try again</jsp:text>
+			<%}%>
     </center>
     </font>
     </body>

@@ -17,12 +17,13 @@ import java.sql.*;
 @WebServlet(name = "login", urlPatterns = { "/login" })
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	static String dbUrl = "jdbc:mysql://localhost/echoTeam";
+	static String dbUrl = "jdbc:mysql://localhost:3306/echoTeam";
 	static String query = "Select * FROM echousers";
 	static String dbUser = "root";
 	static String dbPassword = "shinryu";
 	static Connection con = null;
 	private String target = "/list.jsp";
+	private String failure = "/login.jsp";
 
 	/**
 	 * @author James Oravec The following will connect to the MySQL db, query
@@ -33,6 +34,7 @@ public class Login extends HttpServlet {
 	 */
 	public String Authenticate(String username, String password) {
 		try {
+
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 
@@ -68,15 +70,25 @@ public class Login extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String username = "shawn"; //request.getParameter("username");
-		String password = "shawn"; //request.getParameter("password");
-		String user = Authenticate(username, password);
-
-		request.setAttribute("UserID", user);
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		ServletContext context = getServletContext();
-
+		String user = Authenticate(username, password);
+		request.setAttribute("userId", user);
+		
+		if(user == "")
+		{
+		RequestDispatcher dispatcher = context.getRequestDispatcher(failure);
+		dispatcher.forward(request, response);
+		}
+		
+		if(user != "")
+		{
 		RequestDispatcher dispatcher = context.getRequestDispatcher(target);
 		dispatcher.forward(request, response);
+		}
+		
+		
 	}
 
 	public void destroy() {
