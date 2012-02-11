@@ -7,20 +7,18 @@
  * mysql username and password are hardcoded in here
  */
 
-package echoteam;
+package edu.shawncannon.login;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.*;
 import java.sql.*;
+import edu.unlv.cs673.echoteam.DAO;
+
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	static String dbUrl = "jdbc:mysql://localhost:3306/echoTeam";
-	static String query = "Select * FROM echousers";
-	static String dbUser = "root";
-	static String dbPassword = "password";
-	static Connection con = null;
+
 	private String target = "/computerListAll.jsp";
 	private String failure = "/login.jsp";
 
@@ -33,12 +31,8 @@ public class Login extends HttpServlet {
 	 */
 	public String Authenticate(String username, String password) {
 		try {
-
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-
-			Statement stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(query);
+			DAO myDao = new DAO();
+			ResultSet rs = myDao.readQuery("SELECT * FROM echousers;");
 
 			while (rs.next()) {
 				if (username.equals(rs.getString(2))
@@ -50,7 +44,7 @@ public class Login extends HttpServlet {
 			e.printStackTrace();
 		} finally {
 			try {
-				con.close();
+				DAO.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
